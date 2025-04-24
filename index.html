@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOW PARTY - Calculadora de Artículos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 182, 193, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #ffb6c1, #ffd1dc, #ffb6c1);
+            z-index: -1;
+            border-radius: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff69b4;
+            font-size: 3em;
+            margin-bottom: 30px;
+            font-family: 'Pacifico', cursive;
+            text-shadow: 2px 2px 0px #ffffff;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff5f7;
+            border-radius: 10px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #ffb6c1;
+        }
+
+        th {
+            background-color: #ff69b4;
+            color: white;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ffb6c1;
+            color: #333;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ff69b4;
+            box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+        }
+
+        .total-box {
+            background: #fff5f7;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 2px solid #ffb6c1;
+        }
+
+        .total-line {
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            color: #ff69b4;
+            font-weight: 600;
+        }
+
+        .payment-section {
+            margin-top: 20px;
+            border-top: 2px dashed #ffb6c1;
+            padding-top: 20px;
+        }
+
+        button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: #ff1493;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .floral-deco {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GLOW PARTY ✨</h1>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>Nombre del Artículo</th>
+                        <th>Precio Unitario</th>
+                    </tr>
+                </thead>
+                <tbody id="productos">
+                    <tr>
+                        <td><input type="number" class="cantidad" min="0"></td>
+                        <td><input type="text" class="nombre"></td>
+                        <td><input type="number" class="precio" min="0" step="0.01"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button onclick="agregarFila()">➕ Agregar Artículo</button>
+        
+        <div class="total-box">
+            <div class="total-line">
+                <span class="total-label">Subtotal (sin IVA):</span>
+                <span id="subtotal">$0.00</span>
+            </div>
+            <div class="total-line">
+                <span class="total-label">IVA (15%):</span>
+                <span id="iva">$0.00</span>
+            </div>
+            <div class="total-line" style="font-size: 1.3em; font-weight: bold;">
+                <span class="total-label">Total a Pagar:</span>
+                <span id="total">$0.00</span>
+            </div>
+            
+            <div class="payment-section">
+                <div class="total-line">
+                    <span class="total-label">Dinero Recibido:</span>
+                    <input type="number" id="pago" min="0" step="0.01" style="width: 150px;">
+                </div>
+                <div class="total-line" style="font-weight: bold; color: #2ecc71;">
+                    <span class="total-label">Cambio a Entregar:</span>
+                    <span id="cambio">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function agregarFila() {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td><input type="number" class="cantidad" min="0"></td>
+                <td><input type="text" class="nombre"></td>
+                <td><input type="number" class="precio" min="0" step="0.01"></td>
+            `;
+            document.getElementById('productos').appendChild(fila);
+            
+            fila.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', calcularTotales);
+            });
+        }
+
+        function calcularTotales() {
+            let total = 0;
+            document.querySelectorAll('#productos tr').forEach(fila => {
+                const cantidad = parseFloat(fila.querySelector('.cantidad').value) || 0;
+                const precio = parseFloat(fila.querySelector('.precio').value) || 0;
+                total += cantidad * precio;
+            });
+            
+            const subtotal = total / 1.15;
+            const iva = total - subtotal;
+            
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('iva').textContent = `$${iva.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            
+            calcularCambio();
+        }
+
+        function calcularCambio() {
+            const total = parseFloat(document.getElementById('total').textContent.replace('$', ''));
+            const pago = parseFloat(document.getElementById('pago').value) || 0;
+            const cambio = pago - total;
+            
+            document.getElementById('cambio').textContent = `$${cambio.toFixed(2)}`;
+            document.getElementById('cambio').style.color = cambio >= 0 ? '#2ecc71' : '#e74c3c';
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calcularTotales);
+        });
+        
+        document.getElementById('pago').addEventListener('input', calcularCambio);
+    </script>
+</body>
+</html>
